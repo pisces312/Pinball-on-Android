@@ -122,7 +122,7 @@ public class Settings extends AppCompatActivity {
             startActivity(browserIntent);
         });
         mBinding.githubtxtv.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/fexed/Pinball-on-Android/releases/latest"));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/pisces312/Pinball-on-Android/releases/latest"));
             startActivity(browserIntent);
         });
 
@@ -258,7 +258,7 @@ public class Settings extends AppCompatActivity {
     }
 
     public void checkLatestRelease() {
-        String URL = "https://api.github.com/repos/fexed/Pinball-on-Android/releases/latest";
+        String URL = "https://api.github.com/repos/pisces312/Pinball-on-Android/releases/latest";
         Response.Listener<String> listener = response -> {};
         Response.ErrorListener errorListener = response -> {};
         StringRequest GETReleaseRequest = new StringRequest(Request.Method.GET, URL, listener, errorListener) {

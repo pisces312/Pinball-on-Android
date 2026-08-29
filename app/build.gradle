@@ -10,8 +10,8 @@ android {
         applicationId "com.fexed.spacecadetpinball"
         minSdk 21
         targetSdk 36
-        versionCode 13
-        versionName "2.5"
+        versionCode 14
+        versionName "v2.5.1-modern"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -26,7 +26,6 @@ android {
         }
         debug {
             applicationIdSuffix ".debug"
-            versionNameSuffix "-debug"
         }
     }
 
