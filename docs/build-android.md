@@ -141,7 +141,12 @@ cd D:\3rd-party-projects\Pinball-on-Android
 .\gradlew.bat assembleDebug --no-daemon
 ```
 
-产物：`app\build\outputs\apk\debug\app-debug.apk`（约 33MB，含 arm64-v8a / armeabi-v7a / x86 / x86_64 四架构）。
+产物：`app\build\outputs\apk\debug\app-debug.apk`（约 30MB，仅 arm64-v8a 单架构，`defaultConfig` 已设 `abiFilters 'arm64-v8a'`；debug 包名 `com.fexed.spacecadetpinball.debug`）。
+
+### 后续变更（版本对齐之后）
+
+- **闪退修复 + debug/正式版共存**：见 `docs/sdl-java-layer-sync-fix.md`
+- 仅构建 arm64 的脚本：`build_arm64.bat`
 
 ## 6. 项目结构要点
 
