@@ -41,10 +41,19 @@ android {
         }
     }
 
-    externalNativeBuild {
-        cmake {
-            path file('src/main/cpp/CMakeLists.txt')
-            version '3.22.1'
+    // 已改用预编译 .so（jniLibs），注释掉 externalNativeBuild 以跳过 native 编译，
+    // 使 clone 后无需 NDK / 无需拉取 SDL submodule 即可直接 assembleRelease 打包 APK。
+    // 如需重新编译 native，取消注释以下块并恢复 NDK + SDL/SDL_mixer submodule。
+    //externalNativeBuild {
+    //    cmake {
+    //        path file('src/main/cpp/CMakeLists.txt')
+    //        version '3.22.1'
+    //    }
+    //}
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['src/main/jniLibs']
         }
     }
 
