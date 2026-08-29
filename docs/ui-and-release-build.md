@@ -22,6 +22,8 @@
 
 **修复**：`MainActivity` 覆写 `onBackPressed()`，弹 `AlertDialog` 确认框（Quit game? / Quit / Cancel），点 Quit 才调 `super.onBackPressed()` 走 SDL 清理流程（`onDestroy` → `nativeQuit()`）。
 
+**坑（targetSdk 36 预测性返回）**：Android 13+ 预测性返回（predictive back）在 targetSdk 33+ 默认启用，系统不再调用 `onBackPressed()`，导致确认框根本不触发、返回键直接走系统 finish 回桌面。修复：`AndroidManifest.xml` 的 `<application>` 加 `android:enableOnBackInvokedCallback="false"` 关闭预测性返回，恢复 `onBackPressed()` 路径。
+
 ### 3. Release 签名构建（不开混淆）
 
 **配置**（`app/build.gradle`）：
