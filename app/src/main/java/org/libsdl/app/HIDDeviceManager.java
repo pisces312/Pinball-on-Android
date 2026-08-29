@@ -52,7 +52,7 @@ public class HIDDeviceManager {
 
     private Context mContext;
     private HashMap<Integer, HIDDevice> mDevicesById = new HashMap<Integer, HIDDevice>();
-    //private HashMap<BluetoothDevice, HIDDeviceBLESteamController> mBluetoothDevices = new HashMap<BluetoothDevice, HIDDeviceBLESteamController>();
+    private HashMap<BluetoothDevice, HIDDeviceBLESteamController> mBluetoothDevices = new HashMap<BluetoothDevice, HIDDeviceBLESteamController>();
     private int mNextDeviceId = 0;
     private SharedPreferences mSharedPreferences = null;
     private boolean mIsChromebook = false;
@@ -227,34 +227,38 @@ public class HIDDeviceManager {
         final int XB360_IFACE_PROTOCOL = 1; // Wired
         final int XB360W_IFACE_PROTOCOL = 129; // Wireless
         final int[] SUPPORTED_VENDORS = {
-                0x0079, // GPD Win 2
-                0x044f, // Thrustmaster
-                0x045e, // Microsoft
-                0x046d, // Logitech
-                0x056e, // Elecom
-                0x06a3, // Saitek
-                0x0738, // Mad Catz
-                0x07ff, // Mad Catz
-                0x0e6f, // PDP
-                0x0f0d, // Hori
-                0x1038, // SteelSeries
-                0x11c9, // Nacon
-                0x12ab, // Unknown
-                0x1430, // RedOctane
-                0x146b, // BigBen
-                0x1532, // Razer Sabertooth
-                0x15e4, // Numark
-                0x162e, // Joytech
-                0x1689, // Razer Onza
-                0x1949, // Lab126, Inc.
-                0x1bad, // Harmonix
-                0x24c6, // PowerA
+            0x0079, // GPD Win 2
+            0x044f, // Thrustmaster
+            0x045e, // Microsoft
+            0x046d, // Logitech
+            0x056e, // Elecom
+            0x06a3, // Saitek
+            0x0738, // Mad Catz
+            0x07ff, // Mad Catz
+            0x0e6f, // PDP
+            0x0f0d, // Hori
+            0x1038, // SteelSeries
+            0x11c9, // Nacon
+            0x12ab, // Unknown
+            0x1430, // RedOctane
+            0x146b, // BigBen
+            0x1532, // Razer Sabertooth
+            0x15e4, // Numark
+            0x162e, // Joytech
+            0x1689, // Razer Onza
+            0x1949, // Lab126, Inc.
+            0x1bad, // Harmonix
+            0x20d6, // PowerA
+            0x24c6, // PowerA
+            0x2c22, // Qanba
+            0x2dc8, // 8BitDo
+            0x9886, // ASTRO Gaming
         };
 
         if (usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
-                usbInterface.getInterfaceSubclass() == XB360_IFACE_SUBCLASS &&
-                (usbInterface.getInterfaceProtocol() == XB360_IFACE_PROTOCOL ||
-                        usbInterface.getInterfaceProtocol() == XB360W_IFACE_PROTOCOL)) {
+            usbInterface.getInterfaceSubclass() == XB360_IFACE_SUBCLASS &&
+            (usbInterface.getInterfaceProtocol() == XB360_IFACE_PROTOCOL ||
+             usbInterface.getInterfaceProtocol() == XB360W_IFACE_PROTOCOL)) {
             int vendor_id = usbDevice.getVendorId();
             for (int supportedVid : SUPPORTED_VENDORS) {
                 if (vendor_id == supportedVid) {
@@ -269,19 +273,26 @@ public class HIDDeviceManager {
         final int XB1_IFACE_SUBCLASS = 71;
         final int XB1_IFACE_PROTOCOL = 208;
         final int[] SUPPORTED_VENDORS = {
-                0x045e, // Microsoft
-                0x0738, // Mad Catz
-                0x0e6f, // PDP
-                0x0f0d, // Hori
-                0x1532, // Razer Wildcat
-                0x24c6, // PowerA
-                0x2e24, // Hyperkin
+            0x03f0, // HP
+            0x044f, // Thrustmaster
+            0x045e, // Microsoft
+            0x0738, // Mad Catz
+            0x0b05, // ASUS
+            0x0e6f, // PDP
+            0x0f0d, // Hori
+            0x10f5, // Turtle Beach
+            0x1532, // Razer Wildcat
+            0x20d6, // PowerA
+            0x24c6, // PowerA
+            0x2dc8, // 8BitDo
+            0x2e24, // Hyperkin
+            0x3537, // GameSir
         };
 
         if (usbInterface.getId() == 0 &&
-                usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
-                usbInterface.getInterfaceSubclass() == XB1_IFACE_SUBCLASS &&
-                usbInterface.getInterfaceProtocol() == XB1_IFACE_PROTOCOL) {
+            usbInterface.getInterfaceClass() == UsbConstants.USB_CLASS_VENDOR_SPEC &&
+            usbInterface.getInterfaceSubclass() == XB1_IFACE_SUBCLASS &&
+            usbInterface.getInterfaceProtocol() == XB1_IFACE_PROTOCOL) {
             int vendor_id = usbDevice.getVendorId();
             for (int supportedVid : SUPPORTED_VENDORS) {
                 if (vendor_id == supportedVid) {
@@ -347,16 +358,21 @@ public class HIDDeviceManager {
     }
 
     private void initializeBluetooth() {
-        /*
         Log.d(TAG, "Initializing Bluetooth");
 
-        if (Build.VERSION.SDK_INT <= 30 &&
-                mContext.getPackageManager().checkPermission(android.Manifest.permission.BLUETOOTH, mContext.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 31 /* Android 12  */ &&
+            mContext.getPackageManager().checkPermission(android.Manifest.permission.BLUETOOTH_CONNECT, mContext.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Couldn't initialize Bluetooth, missing android.permission.BLUETOOTH_CONNECT");
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT <= 30 /* Android 11.0 (R) */ &&
+            mContext.getPackageManager().checkPermission(android.Manifest.permission.BLUETOOTH, mContext.getPackageName()) != PackageManager.PERMISSION_GRANTED) {
             Log.d(TAG, "Couldn't initialize Bluetooth, missing android.permission.BLUETOOTH");
             return;
         }
 
-        if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) || (Build.VERSION.SDK_INT < 18)) {
+        if (!mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE) || (Build.VERSION.SDK_INT < 18 /* Android 4.3 (JELLY_BEAN_MR2) */)) {
             Log.d(TAG, "Couldn't initialize Bluetooth, this version of Android does not support Bluetooth LE");
             return;
         }
@@ -402,7 +418,6 @@ public class HIDDeviceManager {
             //     }
             // }, 5000);
         }
-         */
     }
 
     private void shutdownBluetooth() {
@@ -424,7 +439,6 @@ public class HIDDeviceManager {
         ArrayList<BluetoothDevice> disconnected = new ArrayList<BluetoothDevice>();
         ArrayList<BluetoothDevice> connected = new ArrayList<BluetoothDevice>();
 
-        /*
         List<BluetoothDevice> currentConnected = mBluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
 
         for (BluetoothDevice bluetoothDevice : currentConnected) {
@@ -439,7 +453,6 @@ public class HIDDeviceManager {
         }
 
         mLastBluetoothDevices = currentConnected;
-         */
 
         for (BluetoothDevice bluetoothDevice : disconnected) {
             disconnectBluetoothDevice(bluetoothDevice);
@@ -458,7 +471,6 @@ public class HIDDeviceManager {
     }
 
     public boolean connectBluetoothDevice(BluetoothDevice bluetoothDevice) {
-        /*
         Log.v(TAG, "connectBluetoothDevice device=" + bluetoothDevice);
         synchronized (this) {
             if (mBluetoothDevices.containsKey(bluetoothDevice)) {
@@ -476,12 +488,10 @@ public class HIDDeviceManager {
 
             // The Steam Controller will mark itself connected once initialization is complete
         }
-         */
         return true;
     }
 
     public void disconnectBluetoothDevice(BluetoothDevice bluetoothDevice) {
-        /*
         synchronized (this) {
             HIDDeviceBLESteamController device = mBluetoothDevices.get(bluetoothDevice);
             if (device == null)
@@ -493,11 +503,9 @@ public class HIDDeviceManager {
             device.shutdown();
             HIDDeviceDisconnected(id);
         }
-         */
     }
 
     public boolean isSteamController(BluetoothDevice bluetoothDevice) {
-        /*
         // Sanity check.  If you pass in a null device, by definition it is never a Steam Controller.
         if (bluetoothDevice == null) {
             return false;
@@ -509,8 +517,6 @@ public class HIDDeviceManager {
         }
 
         return bluetoothDevice.getName().equals("SteamController") && ((bluetoothDevice.getType() & BluetoothDevice.DEVICE_TYPE_LE) != 0);
-         */
-        return false;
     }
 
     private void close() {
@@ -521,7 +527,7 @@ public class HIDDeviceManager {
                 device.shutdown();
             }
             mDevicesById.clear();
-            //mBluetoothDevices.clear();
+            mBluetoothDevices.clear();
             HIDDeviceReleaseCallback();
         }
     }
@@ -580,12 +586,18 @@ public class HIDDeviceManager {
             try {
                 final int FLAG_MUTABLE = 0x02000000; // PendingIntent.FLAG_MUTABLE, but don't require SDK 31
                 int flags;
-                if (Build.VERSION.SDK_INT >= 31) {
+                if (Build.VERSION.SDK_INT >= 31 /* Android 12.0 (S) */) {
                     flags = FLAG_MUTABLE;
                 } else {
                     flags = 0;
                 }
-                mUsbManager.requestPermission(usbDevice, PendingIntent.getBroadcast(mContext, 0, new Intent(HIDDeviceManager.ACTION_USB_PERMISSION), flags));
+                if (Build.VERSION.SDK_INT >= 33 /* Android 14.0 (U) */) {
+                   Intent intent = new Intent(HIDDeviceManager.ACTION_USB_PERMISSION);
+                   intent.setPackage(mContext.getPackageName());
+                   mUsbManager.requestPermission(usbDevice, PendingIntent.getBroadcast(mContext, 0, intent, flags));
+               } else {
+                   mUsbManager.requestPermission(usbDevice, PendingIntent.getBroadcast(mContext, 0, new Intent(HIDDeviceManager.ACTION_USB_PERMISSION), flags));
+               }
             } catch (Exception e) {
                 Log.v(TAG, "Couldn't request permission for USB device " + usbDevice);
                 HIDDeviceOpenResult(deviceID, false);
