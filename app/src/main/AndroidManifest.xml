@@ -15,10 +15,12 @@
         tools:replace="android:supportsRtl">
         <activity
             android:name=".LeaderboardActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.SpaceCadetPinball.NoActionBar" />
         <activity
             android:name=".Settings"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.SpaceCadetPinball.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize"

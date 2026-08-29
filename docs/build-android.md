@@ -143,9 +143,18 @@ cd D:\3rd-party-projects\Pinball-on-Android
 
 产物：`app\build\outputs\apk\debug\app-debug.apk`（约 30MB，仅 arm64-v8a 单架构，`defaultConfig` 已设 `abiFilters 'arm64-v8a'`；debug 包名 `com.fexed.spacecadetpinball.debug`）。
 
+### Release 签名构建（不开混淆）
+
+```powershell
+.\gradlew.bat assembleRelease --no-daemon
+```
+
+产物：`app\build\outputs\apk\release\app-release.apk`（约 28MB，V2 签名）。签名环境变量见 TOOLS.md，配置细节与压缩说明见 `docs/ui-and-release-build.md`。
+
 ### 后续变更（版本对齐之后）
 
 - **闪退修复 + debug/正式版共存**：见 `docs/sdl-java-layer-sync-fix.md`
+- **UI 优化（去标题栏 + 返回退出）+ Release 签名**：见 `docs/ui-and-release-build.md`
 - 仅构建 arm64 的脚本：`build_arm64.bat`
 
 ## 6. 项目结构要点

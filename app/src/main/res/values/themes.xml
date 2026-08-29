@@ -13,4 +13,10 @@
         <item name="android:statusBarColor">@color/black</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!-- Settings / Leaderboard: no fixed action bar title so it does not overlap content when scrolling -->
+    <style name="Theme.SpaceCadetPinball.NoActionBar" parent="Theme.SpaceCadetPinball">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

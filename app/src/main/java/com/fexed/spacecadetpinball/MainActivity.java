@@ -1,5 +1,6 @@
 package com.fexed.spacecadetpinball;
 
+import android.app.AlertDialog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -196,6 +197,16 @@ public class MainActivity extends SDLActivity {
             startActivity(i);
         });
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.app_name)
+                .setMessage("Quit game?")
+                .setPositiveButton("Quit", (dialog, which) -> MainActivity.super.onBackPressed())
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void copyAssets(File filesDir) {

@@ -6,6 +6,15 @@ android {
     namespace 'com.fexed.spacecadetpinball'
     compileSdk 36
 
+    signingConfigs {
+        release {
+            storeFile file(System.getenv('KEY_STORE'))
+            storePassword System.getenv('KEY_STORE_PASSWORD')
+            keyAlias System.getenv('KEY_ALIAS')
+            keyPassword System.getenv('KEY_PASSWORD')
+        }
+    }
+
     defaultConfig {
         applicationId "com.fexed.spacecadetpinball"
         minSdk 21
@@ -22,6 +31,9 @@ android {
 
     buildTypes {
         release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
