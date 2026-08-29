@@ -14,17 +14,7 @@
 
 `MainActivity`（SDL 全屏游戏）不动，本身全屏无标题栏。
 
-### 2. 返回键退出确认
-
-**问题**：游戏中按返回键无法退出。
-
-**根因**：游戏用 SDL 沉浸式粘滞模式（IMMERSIVE_STICKY），首次按返回键被系统拦截用于退出沉浸模式、显示导航栏，Activity 收不到真正的返回事件；`SDLActivity.onBackPressed()` 默认直接 `super.onBackPressed()` 退出，无确认。
-
-**修复**：`MainActivity` 覆写 `onBackPressed()`，弹 `AlertDialog` 确认框（Quit game? / Quit / Cancel），点 Quit 才调 `super.onBackPressed()` 走 SDL 清理流程（`onDestroy` → `nativeQuit()`）。
-
-**坑（targetSdk 36 预测性返回）**：Android 13+ 预测性返回（predictive back）在 targetSdk 33+ 默认启用，系统不再调用 `onBackPressed()`，导致确认框根本不触发、返回键直接走系统 finish 回桌面。修复：`AndroidManifest.xml` 的 `<application>` 加 `android:enableOnBackInvokedCallback="false"` 关闭预测性返回，恢复 `onBackPressed()` 路径。
-
-### 3. Release 签名构建（不开混淆）
+### 2. Release 签名构建（不开混淆）
 
 **配置**（`app/build.gradle`）：
 ```groovy
@@ -68,3 +58,12 @@ apksigner verify --print-certs app\build\outputs\apk\release\app-release.apk
 
 - **默认不混淆**：`minifyEnabled false` + `shrinkResources false`。游戏是 native（SDL + C++ 弹球核心），Java 层只有 UI 壳，混淆收益小且可能破坏 SDL JNI 回调（`onNativeKeyDown` 等 native 方法映射），故保持关闭。
 - 如需开启混淆，需在 `proguard-rules.pro` 为 `org.libsdl.app.*` 和 `com.fexed.spacecadetpinball` 的 native 方法加 keep 规则，收益有限，暂不推荐。
+
+## 返回键退出（已撤销）
+
+曾尝试为返回键加退出确认框，但遇到两个问题均失败后**整体撤销**：
+
+1. **targetSdk 36 预测性返回（predictive back）**：Android 13+ 默认启用，系统不再调用 `onBackPressed()`，导致确认框不触发、返回键直接 finish 回桌面。
+2. **沉浸式粘滞模式（IMMERSIVE_STICKY）**：关闭 predictive back 后暴露 sticky 模式特性——第一次按返回只显示系统栏（系统拦截、不派发事件），系统栏几秒后自动重隐，永远走不到 `onBackPressed`；改成非 sticky `IMMERSIVE` 后仍无法触发。
+
+**最终决定**：保持 SDL 默认行为（返回键直接回桌面），不额外处理返回键。相关改动（`onBackPressed` 覆写、`enableOnBackInvokedCallback=false`、`IMMERSIVE` 改动）已全部还原。
