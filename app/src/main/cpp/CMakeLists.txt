@@ -127,12 +127,10 @@ set(SOURCE_FILES
 
 add_library(SpaceCadetPinball SHARED ${SOURCE_FILES})
 
-include_directories(
-        ${CMAKE_CURRENT_SOURCE_DIR}/SDL/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/SDL_mixer/include)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/SDL)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/SDL_mixer)
 
 find_library(log-lib log)
 
+# SDL2/SDL2_mixer 通过 target_link_libraries 传递 PUBLIC include（含 SDL 2.30 生成的 SDL_config.h）
 target_link_libraries(SpaceCadetPinball SDL2 SDL2_mixer ${log-lib})

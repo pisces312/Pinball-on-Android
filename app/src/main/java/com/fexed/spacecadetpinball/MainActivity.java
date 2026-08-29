@@ -33,7 +33,6 @@ import java.io.OutputStream;
 
 import com.fexed.spacecadetpinball.databinding.ActivityMainBinding;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 public class MainActivity extends SDLActivity {
     private static final String TAG = "MainActivity";
@@ -47,8 +46,6 @@ public class MainActivity extends SDLActivity {
     private int remainingBalls = 0;
     private BottomSheetBehavior<ConstraintLayout> bottomSheetBehavior;
 
-    private FirebaseAnalytics firebaseAnalytics;
-    private int gamesInSession = 0;
 
     static private MediaPlayer player;
 
@@ -199,8 +196,6 @@ public class MainActivity extends SDLActivity {
             startActivity(i);
         });
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this);
-        firebaseAnalytics.logEvent(FirebaseAnalytics.Event.APP_OPEN, null);
     }
 
     private void copyAssets(File filesDir) {
@@ -245,14 +240,6 @@ public class MainActivity extends SDLActivity {
             putTranslations();
             putString(26, PrefsHelper.getUsername("Player 1"));  //TODO abstract ids
 
-            if (state == GameState.RUNNING) {
-                gamesInSession++;
-                runOnUiThread(() -> firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_START, null));
-            }
-
-            if (state == GameState.FINISHED) {
-                runOnUiThread(() -> firebaseAnalytics.logEvent(FirebaseAnalytics.Event.LEVEL_END, null));
-            }
         }
 
         @Override
@@ -282,9 +269,6 @@ public class MainActivity extends SDLActivity {
         public void onHighScorePresented(int score) {
             if (HighScoreHandler.postHighScore(getContext(), score)) {
                 runOnUiThread(() -> Toast.makeText(getContext(), getString(R.string.newhighscore, score), Toast.LENGTH_LONG).show());
-                Bundle bndl = new Bundle();
-                bndl.putInt(FirebaseAnalytics.Param.SCORE, score);
-                runOnUiThread(() -> firebaseAnalytics.logEvent(FirebaseAnalytics.Event.POST_SCORE, bndl));
             }
         }
 
@@ -325,7 +309,6 @@ public class MainActivity extends SDLActivity {
         public void onCheatsUsed() {
             PrefsHelper.setCheatsUsed(true);
             runOnUiThread(() -> mBinding.cheatAlert.setVisibility(View.VISIBLE));
-            runOnUiThread(() -> firebaseAnalytics.logEvent("cheat_used", null));
         }
 
         @Override
@@ -482,9 +465,6 @@ public class MainActivity extends SDLActivity {
 
     @Override
     protected void onStop() {
-        Bundle bndl = new Bundle();
-        bndl.putInt("games_per_session", gamesInSession);
-        firebaseAnalytics.logEvent("games_per_session", bndl);
         super.onStop();
     }
 

@@ -1,6 +1,6 @@
 [submodule "app/src/main/cpp/SDL_mixer"]
 	path = app/src/main/cpp/SDL_mixer
-	url = https://github.com/libsdl-org/SDL_mixer
+	url = git@github.com:libsdl-org/SDL_mixer.git
 [submodule "app/src/main/cpp/SDL"]
 	path = app/src/main/cpp/SDL
-	url = https://github.com/libsdl-org/SDL
+	url = git@github.com:libsdl-org/SDL.git
